@@ -1,0 +1,135 @@
+#include <iostream>
+#include <limits>
+#include <string>
+using namespace std;
+
+class studData;
+
+class student {
+private:
+    string name;
+    int roll_no;
+    string cls;
+    string division;
+    string dob;
+    string bloodgroup;
+    static int count;
+
+public:
+    // Default Constructor
+    student() : name(""), roll_no(0), cls(""), division(""), dob("dd/mm/yyyy"), bloodgroup("") {}
+
+    // Static function to get the student count
+    static int getCount() {
+        return count;
+    }
+
+    // Input and Display functions
+    void getData(studData*);
+    void dispData(studData*);
+};
+
+// Initialization of static variable
+int student::count = 0;
+
+class studData {
+private:
+    string caddress;
+    long int telno;
+    long int dlno;
+
+public:
+    // Default Constructor
+    studData() : caddress(""), telno(0), dlno(0) {}
+
+    // Input and Display functions
+    void getstudData() {
+        cout << "Enter address of student: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, caddress);
+        cout << "Enter telephone number: ";
+        cin >> telno;
+        cout << "Enter driving license number: ";
+        cin >> dlno;
+    }
+
+    void dispstudData() const {
+        cout << "Address of Student: " << caddress << endl;
+        cout << "Telephone Number: " << telno << endl;
+        cout << "Driving License Number: " << dlno << endl;
+    }
+};
+
+// Input function for `student`
+void student::getData(studData* st) {
+    cout << "\nEnter student name: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, name);
+    cout << "Enter roll number of student: ";
+    cin >> roll_no;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Enter class: ";
+    getline(cin, cls);
+    cout << "Enter division of class: ";
+    cin >> division;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Enter date of birth: ";
+    getline(cin, dob);
+    cout << "Enter blood group: ";
+    cin >> bloodgroup;
+
+    // Get additional student data
+    st->getstudData();
+    count++;
+}
+
+// Display function for `student`
+void student::dispData(studData* st1) {
+    cout << "\nStudent Name: " << name << endl;
+    cout << "Roll Number: " << roll_no << endl;
+    cout << "Class: " << cls << endl;
+    cout << "Division: " << division << endl;
+    cout << "Date of Birth: " << dob << endl;
+    cout << "Blood Group: " << bloodgroup << endl;
+
+    // Display additional data
+    st1->dispstudData();
+}
+
+int main() {
+    student* stud1[100];
+    studData* stud2[100];
+    int n = 0;
+    char ch;
+
+    // Input Loop
+    do {
+        stud1[n] = new student;
+        stud2[n] = new studData;
+
+        stud1[n]->getData(stud2[n]);
+        n++;
+
+        cout << "Do you want to add another student? (y/n): ";
+        cin >> ch;
+        cin.get(); // Clear newline character from input buffer
+    } while (ch == 'y' || ch == 'Y');
+
+    // Display all student records
+    for (int i = 0; i < n; i++) {
+        cout << "\n--- Student Record " << (i + 1) << " ---\n";
+        stud1[i]->dispData(stud2[i]);
+    }
+
+    cout << "\nTotal Students: " << student::getCount() << endl;
+
+    // Clean up dynamically allocated memory
+    for (int i = 0; i < n; i++) {
+        delete stud1[i];
+        stud1[i] = nullptr;
+        delete stud2[i];
+        stud2[i] = nullptr;
+    }
+
+    return 0;
+}
