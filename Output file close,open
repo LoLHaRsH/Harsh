@@ -1,0 +1,49 @@
+#include<iostream>
+#include<fstream>
+using namespace std;
+
+
+class stduent {
+    public:
+        string name;
+        int rollno;
+
+        void input(){
+            cout<<"Enter name of student : ";
+            cin>>name;
+
+            cout<<"Enter roll no of student : ";
+            cin>>rollno;
+            cout<<endl;
+        }
+
+        void output(){
+            cout<<"Name of student : "<<name<<endl;
+            cout<<"Roll no of student : "<<rollno<<endl;
+        }
+};
+
+int main(){
+    fstream file;
+    file.open("sample.txt",ios :: out);
+
+    int n;
+    cout<<"Enter number of students : ";
+    cin>>n;
+
+    stduent s[n];
+    for ( int i= 0; i<n; i++){
+        s[i].input();
+        file<<"Nmae : "<<s[i].name<<"Roll no : "<<s[i].rollno<<endl;
+    }
+    file.close();
+
+    string line ;
+    file.open("sample.txt");
+    while(!file.eof()){
+        
+        file>>line;
+        cout<<line;
+    }
+    cout<<endl;
+}
