@@ -3,133 +3,100 @@
 #include <string>
 using namespace std;
 
-class studData;
 
-class student {
-private:
-    string name;
-    int roll_no;
-    string cls;
-    string division;
-    string dob;
-    string bloodgroup;
-    static int count;
+class complex{
+    double real;
+    double imag;
 
 public:
-    // Default Constructor
-    student() : name(""), roll_no(0), cls(""), division(""), dob("dd/mm/yyyy"), bloodgroup("") {}
-
-    // Static function to get the student count
-    static int getCount() {
-        return count;
+    complex(){
+        real=0;
+        imag=0;
     }
 
-    // Input and Display functions
-    void getData(studData*);
-    void dispData(studData*);
-};
-
-// Initialization of static variable
-int student::count = 0;
-
-class studData {
-private:
-    string caddress;
-    long int telno;
-    long int dlno;
-
-public:
-    // Default Constructor
-    studData() : caddress(""), telno(0), dlno(0) {}
-
-    // Input and Display functions
-    void getstudData() {
-        cout << "Enter address of student: ";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        getline(cin, caddress);
-        cout << "Enter telephone number: ";
-        cin >> telno;
-        cout << "Enter driving license number: ";
-        cin >> dlno;
+    friend ostream&  operator << (ostream &, const complex & d){
+        cout<<d.real<<" + "<<d.imag<<"i"<<endl;
+        return cout;
     }
 
-    void dispstudData() const {
-        cout << "Address of Student: " << caddress << endl;
-        cout << "Telephone Number: " << telno << endl;
-        cout << "Driving License Number: " << dlno << endl;
+    friend istream& operator >> (istream & in, complex& c){
+        in>>c.real>>c.imag;
+        return in;
+    }
+
+    complex operator + (complex c1){
+        complex temp;
+        temp.real = real+c1.real ;
+        temp.imag = imag+ c1.imag;
+        return temp;
+    }
+
+    complex operator *(complex c2){
+        complex temp;
+        temp.real = real* c2.real - imag*c2.real;
+        temp.imag = real* c2.imag + imag*c2.imag;
+        return temp;
     }
 };
 
-// Input function for `student`
-void student::getData(studData* st) {
-    cout << "\nEnter student name: ";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    getline(cin, name);
-    cout << "Enter roll number of student: ";
-    cin >> roll_no;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout << "Enter class: ";
-    getline(cin, cls);
-    cout << "Enter division of class: ";
-    cin >> division;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout << "Enter date of birth: ";
-    getline(cin, dob);
-    cout << "Enter blood group: ";
-    cin >> bloodgroup;
+int main(){
+    complex c1, c2, c3, c4 ;
+    int flag = 1;
+    char b;
+    while(flag == 1){
+        cout<<"Enter real and imaginary part of complex number 1: "<<endl;
+        cin>>c1;
 
-    // Get additional student data
-    st->getstudData();
-    count++;
-}
+        cout<<"Enter real and imaginary part of complex number 2: "<<endl;
+        cin>>c2;
 
-// Display function for `student`
-void student::dispData(studData* st1) {
-    cout << "\nStudent Name: " << name << endl;
-    cout << "Roll Number: " << roll_no << endl;
-    cout << "Class: " << cls << endl;
-    cout << "Division: " << division << endl;
-    cout << "Date of Birth: " << dob << endl;
-    cout << "Blood Group: " << bloodgroup << endl;
+        int f = 1;
+        while( f == 1 ){
+            cout<<"complex number 1 : "<<c1<<endl;
+            cout<<"complex number 2 : "<<c2<<endl;
+            cout<<"**menu**" << endl;
+            cout<<"1. Addition of Complex Numbers"<<endl;
+            cout<<"2. Multiplication of complex numbers"<<endl;
+            cout<<"3. Exit\n";
 
-    // Display additional data
-    st1->dispstudData();
-}
+            int a;
+            cout<<"enter your choice.."<<endl;
+            cin>>a;
+            if( a == 1){
+                c3 = c1 + c2;
+                cout<<"Addition : "<<c3<<endl;
 
-int main() {
-    student* stud1[100];
-    studData* stud2[100];
-    int n = 0;
-    char ch;
+                cout<<"Do you want to perform another operation ? (y/n) : ";
+                cin>>b;
+                if ( b == 'y'|| b == 'Y'){
+                    f=1;
+                }
+                else{
+                    flag = 0;
+                    f = 0;
+                }
 
-    // Input Loop
-    do {
-        stud1[n] = new student;
-        stud2[n] = new studData;
-
-        stud1[n]->getData(stud2[n]);
-        n++;
-
-        cout << "Do you want to add another student? (y/n): ";
-        cin >> ch;
-        cin.get(); // Clear newline character from input buffer
-    } while (ch == 'y' || ch == 'Y');
-
-    // Display all student records
-    for (int i = 0; i < n; i++) {
-        cout << "\n--- Student Record " << (i + 1) << " ---\n";
-        stud1[i]->dispData(stud2[i]);
+            }
+            else if ( a ==2 ){
+                c4 = c1 * c2 ;
+                cout<<"Multiplication : "<<c4<<endl;
+                
+                cout<<"Do you want to perform another operation? (y/n) : ";
+                cin>>b;
+                if ( b == 'y'|| b == 'Y'){
+                    f=1;
+                }
+                else{
+                    flag = 0;
+                    f = 0;
+                }
+                
+            }
+            else{
+                flag = 0;
+                f=0;
+            }
+        }
     }
-
-    cout << "\nTotal Students: " << student::getCount() << endl;
-
-    // Clean up dynamically allocated memory
-    for (int i = 0; i < n; i++) {
-        delete stud1[i];
-        stud1[i] = nullptr;
-        delete stud2[i];
-        stud2[i] = nullptr;
-    }
-
     return 0;
 }
