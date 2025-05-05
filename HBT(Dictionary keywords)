@@ -1,0 +1,232 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct node {
+string keyword;
+string meaning;
+node* l;
+node* r;
+int height;
+};
+
+class Dictionary {
+node* root;
+
+public:
+Dictionary() { root = nullptr; }
+
+int height(node* t) {  
+    if (t == nullptr) return 0;  
+    int lh = height(t->l);  
+    int rh = height(t->r);  
+    return 1 + max(lh, rh);  
+}  
+
+int BF(node* t) {  
+    if (t == nullptr) return 0;  
+    return height(t->l) - height(t->r);  
+}  
+
+node* RR(node* y) {  
+    node* x = y->l;  
+    node* T2 = x->r;  
+    x->r = y;  
+    y->l = T2;  
+    return x;  
+}  
+
+node* RL(node* x) {  
+    node* y = x->r;  
+    node* T2 = y->l;  
+    y->l = x;  
+    x->r = T2;  
+    return y;  
+}  
+
+node* insert(node* root, string keyword, string meaning) {  
+    if (root == nullptr) {  
+        node* newNode = new node{keyword, meaning, nullptr, nullptr, 1};  
+        return newNode;  
+    }  
+    if (keyword < root->keyword)  
+        root->l = insert(root->l, keyword, meaning);  
+    else if (keyword > root->keyword)  
+        root->r = insert(root->r, keyword, meaning);  
+    else {  
+        cout << "Keyword already exists!\n";  
+        return root;  
+    }  
+
+    int bf = BF(root);  
+
+    // Left Heavy  
+    if (bf > 1 && keyword < root->l->keyword) return RR(root);  
+    // Right Heavy  
+    if (bf < -1 && keyword > root->r->keyword) return RL(root);  
+    // Left Right  
+    if (bf > 1 && keyword > root->l->keyword) {  
+        root->l = RL(root->l);  
+        return RR(root);  
+    }  
+    // Right Left  
+    if (bf < -1 && keyword < root->r->keyword) {  
+        root->r = RR(root->r);  
+        return RL(root);  
+    }  
+    return root;  
+}  
+
+void addEntry() {  
+    string k, m;  
+    cout << "Enter keyword: "; cin >> k;  
+    cout << "Enter meaning: "; cin.ignore(); getline(cin, m);  
+    root = insert(root, k, m);  
+}  
+
+node* search(node* root, string key, int& comparisons) {  
+    if (root == nullptr) return nullptr;  
+    comparisons++;  
+    if (key == root->keyword) return root;  
+    else if (key < root->keyword) return search(root->l, key, comparisons);  
+    else return search(root->r, key, comparisons);  
+}  
+
+void searchKeyword() {  
+    string k;  
+    int comp = 0;  
+    cout << "Enter keyword to search: "; cin >> k;  
+    node* res = search(root, k, comp);  
+    if (res) cout << "Meaning: " << res->meaning << " (Comparisons: " << comp << ")\n";  
+    else cout << "Keyword not found (Comparisons: " << comp << ")\n";  
+}  
+
+void update(node* root, string key) {  
+    if (!root) return;  
+    if (key == root->keyword) {  
+        cout << "Enter new meaning: ";  
+        cin.ignore(); getline(cin, root->meaning);  
+        return;  
+    }  
+    else if (key < root->keyword) update(root->l, key);  
+    else update(root->r, key);  
+}  
+
+void updateKeyword() {  
+    string k;  
+    cout << "Enter keyword to update: "; cin >> k;  
+    update(root, k);  
+}  
+
+node* minValueNode(node* n) {  
+    while (n->l) n = n->l;  
+    return n;  
+}  
+
+node* deleteNode(node* root, string key) {  
+    if (!root) return root;  
+
+    if (key < root->keyword)  
+        root->l = deleteNode(root->l, key);  
+    else if (key > root->keyword)  
+        root->r = deleteNode(root->r, key);  
+    else {  
+        if (!root->l || !root->r) {  
+            node* temp = root->l ? root->l : root->r;  
+            delete root;  
+            return temp;  
+        } else {  
+            node* temp = minValueNode(root->r);  
+            root->keyword = temp->keyword;  
+            root->meaning = temp->meaning;  
+            root->r = deleteNode(root->r, temp->keyword);  
+        }  
+    }  
+
+    int bf = BF(root);  
+
+    // Rotations  
+    if (bf > 1 && BF(root->l) >= 0) return RR(root);  
+    if (bf > 1 && BF(root->l) < 0) {  
+        root->l = RL(root->l);  
+        return RR(root);  
+    }  
+    if (bf < -1 && BF(root->r) <= 0) return RL(root);  
+    if (bf < -1 && BF(root->r) > 0) {  
+        root->r = RR(root->r);  
+        return RL(root);  
+    }  
+    return root;  
+}  
+
+void deleteKeyword() {  
+    string k;  
+    cout << "Enter keyword to delete: "; cin >> k;  
+    root = deleteNode(root, k);  
+}  
+
+void ascending(node* root) {  
+    if (!root) return;  
+    ascending(root->l);  
+    cout << root->keyword << ": " << root->meaning << endl;  
+    ascending(root->r);  
+}  
+
+void descending(node* root) {  
+    if (!root) return;  
+    descending(root->r);  
+    cout << root->keyword << ": " << root->meaning << endl;  
+    descending(root->l);  
+}  
+
+void showAscending() {  
+    cout << "Dictionary in Ascending Order:\n";  
+    ascending(root);  
+}  
+
+void showDescending() {  
+    cout << "Dictionary in Descending Order:\n";  
+    descending(root);  
+}  
+
+void showMaxComparisons() {  
+    cout << "Maximum comparisons for finding any keyword: " << height(root) << endl;  
+}  
+
+void menu() {  
+    int ch;  
+    do {  
+        cout << "\n\n1. Add Keyword"  
+             << "\n2. Delete Keyword"  
+             << "\n3. Update Meaning"  
+             << "\n4. Search Keyword"  
+             << "\n5. Display Ascending"  
+             << "\n6. Display Descending"  
+             << "\n7. Max Comparisons"  
+             << "\n8. Exit"  
+             << "\nEnter your choice: ";  
+        cin >> ch;  
+
+        switch(ch) {  
+            case 1: addEntry(); break;  
+            case 2: deleteKeyword(); break;  
+            case 3: updateKeyword(); break;  
+            case 4: searchKeyword(); break;  
+            case 5: showAscending(); break;  
+            case 6: showDescending(); break;  
+            case 7: showMaxComparisons(); break;  
+            case 8: cout << "Exiting...\n"; break;  
+            default: cout << "Invalid choice\n"; break;  
+        }  
+    } while(ch != 8);  
+}
+
+};
+
+int main() {
+Dictionary d;
+d.menu();
+return 0;
+}
+
+
