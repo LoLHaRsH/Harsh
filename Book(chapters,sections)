@@ -1,0 +1,219 @@
+#include<iostream>
+#include <cstring>
+using namespace std;
+
+struct node{
+    char name[20];
+    node* next;
+    node* down;
+    int flag;
+};
+
+class GLL{
+    char chapNmae[20];
+    char secName[20];
+    int n, i;
+    node* head = nullptr;
+    node* temp = nullptr;
+    node* t1 = nullptr;
+    node* t2 = nullptr;
+    public:
+    node* create(){
+        node* p = new node;
+        p->next = nullptr;
+        p->down = nullptr;
+        p->flag = 0;
+        cout<<"\nEnter name: ";
+        cin>>p->name;
+        return p;
+    }
+
+    void insertb(){
+        if(head == nullptr){
+            t1 = create();
+            head = t1;
+        }else{
+            cout<<"\nBook Exist."<<endl;
+        }
+    }
+
+    void insertc(){
+        if(head == nullptr){
+            cout<<"\nThere is no book"<<endl;
+        }else{
+            cout<<"\nEnter no. of chapters you want to insert: ";
+            cin>>n;
+
+            for(i = 0; i<n; i++){
+                t1 = create();
+                if(head->flag == 0){
+                    head->down = t1;
+                    head->flag = 1;
+                }else{
+                    temp = head;
+                    temp = temp->down;
+                    while(temp->next != nullptr){
+                        temp = temp->next;
+                    }temp->next = t1;
+                }
+            }
+        }
+    }
+
+    void inserts(){
+        if(head == nullptr){
+            cout<<"\nThere is no book."<<endl;
+        }else{
+            cout<<"\nEnter name of chapter in whoch you want to enter the section: ";
+            cin>>chapNmae;
+            temp = head;
+            if(temp->flag == 0){
+                cout<<"\nThere are no chapters in the book."<<endl;
+            }else{
+                temp = temp->down;
+                while (temp != nullptr){
+                    if(strcmp(chapNmae, temp->name) == 0){
+                        cout<<"\nEnter no. of sections you want to enter: ";
+                        cin>>n;
+                        for(int i = 0; i<n; i++){
+                            t1 = create();
+                            if(temp->flag == 0){
+                                temp->down = t1;
+                                temp->flag = 1;
+                                t2 = temp->down;
+                            }else{
+                                t2 = temp->down;
+                                while (t2->next != nullptr){
+                                    t2 = t2->next;
+                                }t2->next = t1;    
+                            }
+                        }break;
+                    }temp = temp->next;
+                }
+            }
+        }
+    }
+
+    void insertss(){
+        if(head == nullptr){
+            cout<<"\nThere is no book.";return;
+        }else{
+            cout<<"\nEnter name of chapter in whoch you want to enter the section: ";
+            cin>>chapNmae;
+            temp = head;
+            if(temp->flag == 0){
+                cout<<"\nThere are no chapters in the book."<<endl;
+            }else{
+                temp = temp->down;
+                while (temp != nullptr){
+                    if(strcmp(chapNmae, temp->name) == 0){
+                        cout<<"\nEnter name of section in which you want to enter the subsection: ";
+                        cin>>secName;
+                        if(temp->flag == 0){
+                            cout<<"\nThere are no sections in chapter."<<endl;
+                        }else{
+                            node* section = temp->down;
+                            while(section != nullptr){
+                                if(strcmp(secName, section->name) == 0){
+                                    cout<<"\nEnter no. of subsection you want to insert: ";
+                                    cin>>n;
+                                    for(i = 0; i<n; i++){
+                                        t1 = create();
+                                        if(section->flag == 0){
+                                            section->down = t1;
+                                            section->flag = 1;
+                                            t2 = section->down;
+                                        }else{
+                                            t2 = section->down;
+                                            while (t2->next != nullptr){
+                                                t2 = t2->next;
+                                            }t2->next = t1;
+                                        }
+                                    }break;
+                                }section = section->next;
+                            }
+                        }temp = temp->next;
+                    }
+                }
+            }
+        }
+    }
+
+    void display(){
+        if(head == nullptr){
+            cout<<"\nBook not exist."<<endl;
+        }else{
+            temp = head;
+            cout<<"\nName of book: "<<temp->name;
+            if(temp->flag == 1){
+                temp = temp->down;
+                while(temp != nullptr){
+                    cout<<"\n\t\tName of chapter: "<<temp->name;
+                    t1 = temp;
+                    if(t1->flag == 1){
+                        t1 = t1->down;
+                        while (t1 != nullptr){
+                            cout<<"\n\t\t\t\tName of section: "<<t1->name;
+                            t2 = t1;
+                            if(t2->flag == 1){
+                                t2 = t2->down;
+                                while (t2 != nullptr){
+                                    cout<<"\n\t\t\t\t\t\tName of subsection: "<<t2->name;
+                                    t2 = t2->next;
+                                } 
+                            }t1 = t1->next;
+                        } 
+                    }temp = temp->next;
+                }
+            }
+        }
+    }
+};
+
+int main(){
+    GLL obj;
+    int n;
+    char ch;
+    do{
+        cout<<"\n1. Insert book"
+            <<"\n2. Insert Chapter"
+            <<"\n3. Insert Section"
+            <<"\n4. Insert Subsection"
+            <<"\n5. Display Book"
+            <<"\n6. Exit Program."
+            <<"\nEnter your choice: ";
+        cin>>n;
+
+        switch (n)
+        {
+        case 1:
+            obj.insertb();
+            break;
+        case 2:
+            obj.insertc();
+            break;
+        case 3:
+            obj.inserts();
+            break;
+        case 4:
+            obj.insertss();
+            break;
+        case 5:
+            obj.display();
+            break;
+        case 6:
+            cout<<"\nQuitting program";
+            break;
+        default:
+            break;
+        }
+        if (n != 6) {
+            cout << "\nDo you want to continue? (y/n): ";
+            cin >> ch;
+        } else {
+            ch = 'n';
+        }
+    }while (ch == 'y' || ch == 'Y');
+    return 0;
+}
+
