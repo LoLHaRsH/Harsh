@@ -1,0 +1,123 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstdio>
+using namespace std;
+
+struct Student {
+    int roll;
+    char name[50];
+    char div;
+    char address[100];
+};
+
+void addStudent() {
+    Student s;
+    ofstream fout("students.txt", ios::app | ios::binary); // append mode
+
+    cout << "\nEnter Roll Number: ";
+    cin >> s.roll;
+    cout << "Enter Name: ";
+    cin.ignore();
+    cin.getline(s.name, 50);
+    cout << "Enter Division: ";
+    cin >> s.div;
+    cout << "Enter Address: ";
+    cin.ignore();
+    cin.getline(s.address, 100);
+
+    fout.write((char*)&s, sizeof(s));
+    fout.close();
+    cout << "Student record added successfully!\n";
+}
+
+void displayStudent(int roll) {
+    Student s;
+    ifstream fin("students.txt", ios::in | ios::binary);
+    bool found = false;
+
+    while (fin.read((char*)&s, sizeof(s))) {
+        if (s.roll == roll) {
+            cout << "\n--- Record Found ---\n";
+            cout << "Roll: " << s.roll << "\nName: " << s.name 
+                 << "\nDivision: " << s.div << "\nAddress: " << s.address << endl;
+            found = true;
+            break;
+        }
+    }
+    fin.close();
+
+    if (!found)
+        cout << "Record not found.\n";
+}
+
+void deleteStudent(int roll) {
+    Student s;
+    ifstream fin("students.txt", ios::in | ios::binary);
+    ofstream fout("temp.txt", ios::out | ios::binary);
+    bool found = false;
+
+    while (fin.read((char*)&s, sizeof(s))) {
+        if (s.roll != roll) {
+            fout.write((char*)&s, sizeof(s));
+        } else {
+            found = true;
+        }
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("students.txt");
+    rename("temp.txt", "students.txt");
+
+    if (found)
+        cout << "Record deleted successfully.\n";
+    else
+        cout << "Record not found.\n";
+}
+
+int main() {
+    int choice, roll;
+
+    do {
+        cout << "\n--- Student Record Menu ---\n";
+        cout << "1. Add Student\n";
+        cout << "2. Display Student\n";
+        cout << "3. Delete Student\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cin.clear(); // clear error flags
+            cin.ignore(10000, '\n'); // discard invalid input
+            cout << "Invalid input. Please enter a number.\n";
+            continue;
+        }
+
+        switch (choice) {
+            case 1:
+                addStudent();
+                break;
+            case 2:
+                cout << "Enter Roll Number to search: ";
+                cin >> roll;
+                displayStudent(roll);
+                break;
+            case 3:
+                cout << "Enter Roll Number to delete: ";
+                cin >> roll;
+                deleteStudent(roll);
+                break;
+            case 4:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
