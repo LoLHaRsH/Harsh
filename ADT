@@ -78,6 +78,14 @@ public:
         }
         return res;
     }
+
+    bool isSubset(Set s1, Set s2) {
+        for (int i = 0; i < s2.it; i++) {
+            if (!s1.contains(s2.arr[i]))
+                return false;
+        }
+        return true;
+    }
 };
 
 int main() {
@@ -86,7 +94,7 @@ int main() {
 
     do {
         cout << "\n1. Add element\n2. Remove element\n3. Size\n4. Display\n5. Contains?\n"
-             << "6. Union\n7. Intersection\n8. Iterator\n9. Difference\n10. Exit\n";
+             << "6. Union\n7. Intersection\n8. Iterator\n9. Difference\n10. Subset Check\n11. Exit\n";
         cout << "Enter your choice: ";
         cin >> ch;
 
@@ -110,7 +118,8 @@ int main() {
             cout << "Enter element to check: ";
             cin >> ele;
             cout << (s1.contains(ele) ? "Present\n" : "Not Present\n");
-        } else if (ch >= 6 && ch <= 9) {
+        } else if (ch >= 6 && ch <= 10) {
+            s2 = Set();  // reset second set
             cout << "Enter 5 elements for second set:\n";
             for (int i = 0; i < 5; i++) {
                 int num;
@@ -134,14 +143,16 @@ int main() {
                 res = res.difference_set(s1, s2);
                 cout << "Difference (Set1 - Set2): ";
                 res.disp();
+            } else if (ch == 10) {
+                cout << (s1.isSubset(s1, s2) ? "Second set is a subset of first set\n" : "Second set is NOT a subset\n");
             }
-        } else if (ch == 10) {
+        } else if (ch == 11) {
             cout << "Exited.\n";
         } else {
             cout << "Invalid choice!\n";
         }
 
-    } while (ch != 10);
+    } while (ch != 11);
 
     return 0;
 }
